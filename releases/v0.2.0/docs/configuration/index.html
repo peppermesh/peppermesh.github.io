@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffaf3"><meta name="description" content="Pepper is a private data fabric for verified storage, transactional namespaces, versioned buckets, filesystems, S3, and Firecracker compute."><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/styles.css"><!><link rel="modulepreload" href="/pkg/peppermesh.js" crossorigin="qBDRGim6jEgQbJu9eMlHQA"><link rel="preload" href="/pkg/peppermesh.wasm" as="fetch" type="application/wasm" crossorigin="qBDRGim6jEgQbJu9eMlHQA"><script type="module" nonce="qBDRGim6jEgQbJu9eMlHQA">(function (root, pkg_path, output_name, wasm_output_name) {
+	import(`${root}/${pkg_path}/${output_name}.js`)
+		.then(mod => {
+			mod.default({module_or_path: `${root}/${pkg_path}/${wasm_output_name}.wasm`}).then(() => {
+				mod.hydrate();
+			});
+		})
+})
+("", "pkg", "peppermesh", "peppermesh");</script><title>Pepper — a private data fabric across your machines</title></head><body><div class="min-h-screen bg-canvas"><header class="border-b border-ink/10 bg-canvas/95"><nav class="mx-auto max-w-7xl px-5 py-4 lg:px-8"><div class="flex items-center justify-between gap-5"><a href="/" class="font-mono text-lg font-semibold"><span class="text-pepper-600">pepper</span><span class="text-mesh-600">mesh</span></a><a href="/releases/v0.2.0" class="rounded-full bg-pepper-100 px-3 py-1.5 font-mono text-xs font-semibold text-pepper-800">v0.2.0</a></div><div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium"><a href="/releases/v0.2.0/docs">Start</a><a href="/releases/v0.2.0/docs/namespaces">Namespaces &amp; KV</a><a href="/releases/v0.2.0/docs/data-services">Data services</a><a href="/releases/v0.2.0/docs/agent">Agent</a><a href="/releases/v0.2.0/docs/configuration">Configuration</a><a href="/releases/v0.2.0/docs/cli">CLI</a><a href="/releases/v0.2.0/docs/api">HTTP API</a><a href="/releases/v0.2.0/docs/operations">Operations</a></div></nav></header><main class="mx-auto max-w-5xl px-5 py-14 lg:px-8 lg:py-20"><a href="/releases/v0.2.0" class="font-mono text-xs font-semibold text-pepper-700 hover:underline">← Pepper 0.2.0</a><h1 class="mt-5 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Agent configuration</h1><div class="mt-12 space-y-12"><p class="text-lg leading-8 text-ink/65">Pepper 0.2.0 uses strict TOML: unknown sections and fields are rejected. Relative paths are resolved from the agent's working directory, not from the configuration file's directory.</p><section><h2 class="text-2xl font-semibold tracking-tight">Complete example</h2><div class="mt-4 space-y-4 leading-7 text-ink/70"><pre class="overflow-x-auto rounded-2xl bg-ink p-5 text-sm leading-6 text-pepper-100"><code>[node]
+name = "node-1"                         # default: pepper-node
+listen_addr = "127.0.0.1:9001"          # default: 127.0.0.1:9000
+# advertise_addr = "10.0.0.10:9001"
+# failure_domain = "rack-a"
+
+[node.placement_labels]
+# region = "us-east"
+# zone = "us-east-1a"
+# rack = "rack-a"
+# disk_class = "ssd"
+
+[data]
+path = "/var/lib/pepper"                # default: ./.pepper
+
+[identity]
+key_path = "/var/lib/pepper/node.key"   # default: &lt;data.path&gt;/node.key
+generate_if_missing = true
+
+[api]
+bind_addr = "127.0.0.1:9080"            # loopback required
+
+[[storage.locations]]
+path = "/srv/pepper"
+max_capacity_bytes = 100000000000
+
+[network]
+bootstrap_peers = ["10.0.0.11:9001"]
+
+[namespace]
+enabled = true                           # default: false
+consensus_enabled = true                 # default: false
+max_namespace_groups = 128
+max_consensus_log_bytes = 268435456
+max_namespace_write_rate = 1000
+max_consensus_command_bytes = 1048576
+heartbeat_interval_ms = 100
+election_timeout_min_ms = 300
+election_timeout_max_ms = 600
+snapshot_after_logs = 1000
+max_logs_after_snapshot = 128
+checkpoint_log_bytes = 67108864
+checkpoint_restore_target_ms = 2000
+max_staging_leases = 10000
+max_staging_bytes = 17179869184
+staging_ttl_seconds = 900
+read_lease_ttl_seconds = 3600
+
+[replication]
+default_factor = 3
+repair_interval_seconds = 30
+
+[erasure]
+enabled = false
+min_size_bytes = 67108864
+data_shards = 6
+parity_shards = 3
+
+[compute]
+enabled = true
+runtime = "firecracker"
+max_concurrent_jobs = 1
+work_dir = "/var/lib/pepper/compute"
+firecracker_binary = "/usr/local/bin/firecracker"
+firecracker_jailer_binary = "/usr/local/bin/jailer"
+firecracker_enable_jailer = false
+firecracker_jailer_uid = 65534
+firecracker_jailer_gid = 65534
+firecracker_jailer_chroot_base = "/srv/jailer"
+firecracker_strict_sandbox = true
+firecracker_allow_untrusted_rootfs = false
+firecracker_allowed_rootfs_cids = []
+# firecracker_kernel_image = "/var/lib/pepper/vmlinux"
+firecracker_memory_mib = 128
+firecracker_vcpu_count = 1
+firecracker_max_input_bytes = 1073741824
+firecracker_max_output_bytes = 1073741824
+firecracker_cgroup_enabled = true
+firecracker_cgroup_base = "/sys/fs/cgroup/pepper"
+
+[auth]
+# Required for non-loopback P2P; file must be &gt;=32 bytes and mode 0600.
+# cluster_secret_path = "/etc/pepper/cluster.secret"
+# api_bearer_token = "replace-with-a-secret"
+
+[s3]
+enabled = false
+region = "us-east-1"
+# access_key_id = "pepper"
+# secret_access_key_path = "/etc/pepper/s3.secret"
+max_clock_skew_seconds = 900
+
+[limits]
+max_block_bytes = 67108864
+max_object_bytes = 1073741824
+max_compute_timeout_seconds = 600
+http_requests_per_minute = 6000
+rpc_requests_per_minute = 6000
+erasure_repair_max_concurrent_shards = 2
+# erasure_repair_bytes_per_second = 10485760
+
+[logging]
+format = "pretty"                        # pretty or json
+</code></pre></div></section><section><h2 class="text-2xl font-semibold tracking-tight">Configuration sections</h2><div class="mt-4 space-y-4 leading-7 text-ink/70"><div class="overflow-hidden rounded-2xl border border-ink/10 bg-white"><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[node]</code><p class="text-sm leading-6 text-ink/65">Name, P2P listen/advertise addresses, failure_domain, and placement_labels.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[data] / [identity]</code><p class="text-sm leading-6 text-ink/65">Metadata/state path and optional identity key path/generation policy.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[api]</code><p class="text-sm leading-6 text-ink/65">Loopback-only HTTP bind address.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[[storage.locations]]</code><p class="text-sm leading-6 text-ink/65">One or more unique block-store paths with explicit capacity ceilings.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[network]</code><p class="text-sm leading-6 text-ink/65">Bootstrap peer socket addresses.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[namespace]</code><p class="text-sm leading-6 text-ink/65">Feature gates, Raft timing/log limits, group/write admission, staging, and read leases.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[replication] / [erasure]</code><p class="text-sm leading-6 text-ink/65">Default replicated durability, repair cadence, and Reed-Solomon policy.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[compute]</code><p class="text-sm leading-6 text-ink/65">Firecracker, jailer, rootfs, VM, I/O, concurrency, and cgroup controls.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[auth]</code><p class="text-sm leading-6 text-ink/65">Cluster secret file and optional local API bearer token.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[s3]</code><p class="text-sm leading-6 text-ink/65">Opt-in region, access key, secret file, and signing clock skew.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[limits]</code><p class="text-sm leading-6 text-ink/65">Block/object/compute, HTTP/RPC, and erasure-repair limits.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">[logging]</code><p class="text-sm leading-6 text-ink/65">pretty or json output.</p></div><!></div></div></section><section><h2 class="text-2xl font-semibold tracking-tight">Namespace defaults and rules</h2><div class="mt-4 space-y-4 leading-7 text-ink/70"><div class="overflow-hidden rounded-2xl border border-ink/10 bg-white"><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">enabled / consensus_enabled</code><p class="text-sm leading-6 text-ink/65">Both default false. consensus_enabled requires enabled; S3 requires both.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">max_namespace_groups</code><p class="text-sm leading-6 text-ink/65">128 groups hosted by this node.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">max_consensus_log_bytes</code><p class="text-sm leading-6 text-ink/65">256 MiB per-node consensus log admission ceiling.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">max_namespace_write_rate</code><p class="text-sm leading-6 text-ink/65">1,000 writes in the configured admission window.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">max_consensus_command_bytes</code><p class="text-sm leading-6 text-ink/65">1 MiB; must remain below max_consensus_log_bytes.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">heartbeat / election</code><p class="text-sm leading-6 text-ink/65">100 ms heartbeat, 300 ms minimum election, 600 ms maximum; must satisfy 0 &lt; heartbeat &lt; min &lt; max.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">snapshot_after_logs / max_logs_after_snapshot</code><p class="text-sm leading-6 text-ink/65">1,000 and 128; retained post-snapshot logs must stay below the snapshot threshold.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">checkpoint_log_bytes</code><p class="text-sm leading-6 text-ink/65">64 MiB; must remain below max_consensus_log_bytes.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">max_staging_leases / max_staging_bytes</code><p class="text-sm leading-6 text-ink/65">10,000 leases and 16 GiB of staged content.</p></div><div class="grid gap-2 border-b border-ink/10 p-4 last:border-0 sm:grid-cols-[18rem_1fr]"><code class="break-words text-sm font-semibold text-pepper-700">staging_ttl_seconds / read_lease_ttl_seconds</code><p class="text-sm leading-6 text-ink/65">900 seconds and 3,600 seconds.</p></div><!></div></div></section><section><h2 class="text-2xl font-semibold tracking-tight">Security and validation</h2><div class="mt-4 space-y-4 leading-7 text-ink/70"><ul class="list-disc space-y-2 pl-5"><li>api.bind_addr must be loopback. A non-loopback P2P listener requires a cluster secret containing at least 32 bytes with Unix mode 0600 or stricter.</li><li>node.advertise_addr is required for an unspecified listener such as 0.0.0.0 and must be routable unicast.</li><li>At least one unique, nonzero-capacity storage location is required. Replication is 1–64; the repair interval is 5–86,400 seconds.</li><li>Erasure data/parity counts must be nonzero, parity cannot exceed data, and their sum cannot exceed 32.</li><li>Compute runtime must be firecracker. Input/output caps are 1 byte–16 GiB; jailer UID/GID must be nonzero when enabled.</li><li>S3 access keys are visible ASCII, regions contain letters/digits/hyphens, a secret path is required, and clock skew is 1–3,600 seconds.</li><li>max_block_bytes is at most 64 MiB; max_object_bytes is at most 1 TiB; configured rate/concurrency limits must be nonzero.</li></ul></div></section><section><h2 class="text-2xl font-semibold tracking-tight">Firecracker rootfs policy</h2><div class="mt-4 space-y-4 leading-7 text-ink/70"><p>Each job supplies rootfs_cid. By default it must appear in firecracker_allowed_rootfs_cids and use a raw, object, or erasure CID. firecracker_allow_untrusted_rootfs=true is an explicit development-only opt-out because host tools parse the ext4 image before boot. The rootfs must contain executable /pepper-guest-agent.</p></div></section></div></main><footer class="border-t border-ink/10"><div class="mx-auto max-w-5xl px-5 py-8 text-sm text-ink/50 lg:px-8">Pepper 0.2.0 documentation — frozen for this release</div></footer></div></body></html><script nonce="qBDRGim6jEgQbJu9eMlHQA">__RESOLVED_RESOURCES=[];__SERIALIZED_ERRORS=[];__PENDING_RESOURCES=[];__RESOURCE_RESOLVERS=[];</script><script nonce="qBDRGim6jEgQbJu9eMlHQA">__INCOMPLETE_CHUNKS=[];</script>

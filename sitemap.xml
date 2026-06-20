@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://peppermesh.org/</loc></url>
+  <url><loc>https://peppermesh.org/releases/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/namespaces/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/data-services/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/agent/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/configuration/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/cli/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/api/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.2.0/docs/operations/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.1.0/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.1.0/docs/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.1.0/docs/agent/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.1.0/docs/configuration/</loc></url>
+  <url><loc>https://peppermesh.org/releases/v0.1.0/docs/cli/</loc></url>
+</urlset>
